@@ -1,0 +1,139 @@
+.main {
+    width: 98%;
+    height: 100vh;
+    margin: 10px auto 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 70px;
+}
+
+button {
+    width: 60px;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leftSide {
+    width: 131px;
+    display: flex;
+    flex-direction: column;
+}
+
+.safeArea {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+.home {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+.safeToLand {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+.noFlyArea {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+#startBtn {
+    padding: 10px;
+    width: 100%;
+    margin-top: 25px;
+}
+
+
+
+
+
+
+
+
+
+
+.rightSide {
+    margin-right: 20px;
+}
+
+.upCooContainer {
+    display: flex;
+    margin-left: 5px;
+}
+
+.upCoo {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.upCoo span {
+    font-size: 20px;
+    margin-bottom: 3px;
+}
+
+.cooLine {
+    width: 2px;
+    height: 8px;
+    background-color: black;
+}
+
+.sideCooCanvasContainer {
+    display: flex;
+}
+
+.sideCooContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.sideCoo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 50px;
+    width: 30px;
+}
+
+.sideCoo span {
+    font-size: 20px;
+    margin-top: -10px;
+}
+
+.cooLineSide {
+    width: 8px;
+    height: 2px;
+    background-color: black;
+    margin-top: -1px;
+}
+
+canvas {
+    background-color: lightgray;
+    height: 700px !important;
+    width: 1000px !important;
+}

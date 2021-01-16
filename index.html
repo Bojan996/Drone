@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drone Flight</title>
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+  </head>
+  <body>
+    <div class="main">
+      <div class="leftSide">
+
+        <div class="safeArea">
+          <p style="font-weight: 800;">SafeArea:starts 1 1</p>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">X</span><input id="SAX" type="number" value="1" max="20" min="0"/></div>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">Y</span><input id="SAY" type="number" value="1" max="14" min="0"/></div>
+          <button id="safeAreaButton" style="padding: 2px;">Submit</button>
+        </div>
+
+        <div class="home">
+          <p style="font-weight: 800;">Home</p>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">X</span><input id="homeX" type="number" value="0" max="20" min="0" disabled/></div>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">Y</span><input id="homeY" type="number" value="0" max="14" min="0" disabled/></div>
+          <button id="homeButton" style="padding: 2px;" disabled>Submit</button>
+        </div>
+
+        <div class="safeToLand">
+          <p style="font-weight: 800;">Safe to land</p>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">X</span><input id="SX" type="number" value="0" max="20" min="0" disabled/></div>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">Y</span><input id="SY" type="number" value="0" max="14" min="0" disabled/></div>
+          <div class="buttonContainer">
+            <button id="safeToLandButtonS" style="padding: 2px;" disabled>Submit</button>
+            <button id="safeToLandButtonF" style="padding: 2px;" disabled>Finish</button>
+          </div>
+        </div>
+
+        <div class="noFlyArea">
+          <p style="font-weight: 800;">No fly area</p>
+          <p id='NFStartPosition'>Input start position:</p>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">X</span><input id="NFX" type="number" value="0" max="20" min="0" disabled/></div>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">Y</span><input id="NFY" type="number" value="0" max="14" min="0" disabled/><br /></div>
+          <div class="buttonContainer">
+            <button id="noFlyAreaS" style="padding: 2px;" disabled>Submit</button>
+            <button id="noFlyAreaF" style="padding: 2px;" disabled>Finish</button>
+          </div>
+        </div>
+
+        <div class="path">
+          <p style="font-weight: 800;" id="dronePathP">Path</p>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">X</span><input id="DPX" type="number" value="0" max="20" min="0" disabled/></div>
+          <div style="display: flex; margin-bottom: 10px;"><span style="margin-right: 10px">Y</span><input id="DPY" type="number" value="0" max="14" min="0" disabled/></div>
+          <button id="pathButton" style="padding: 2px;" disabled>Submit</button>
+        </div>
+
+        <button disabled id="startBtn">Start</button>
+
+      </div>
+      <div class="rightSide">
+        <div class="upCooContainer">
+          <div class="upCoo">
+            <span>0</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>1</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>2</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>3</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>4</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>5</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>6</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>7</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>8</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>9</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>10</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>11</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>12</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>13</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>14</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>15</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>16</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>17</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>18</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>19</span>
+            <div class="cooLine"></div>
+          </div>
+          <div class="upCoo">
+            <span>20</span>
+            <div class="cooLine"></div>
+          </div>
+        </div>
+        <div class="sideCooCanvasContainer">
+          <div class="sideCooContainer">
+            <div class="sideCoo">
+              <span>0</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>1</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>2</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>3</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>4</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>5</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>6</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>7</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>8</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>9</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>10</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>11</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>12</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>13</span>
+              <div class="cooLineSide"></div>
+            </div>
+            <div class="sideCoo">
+              <span>14</span>
+              <div class="cooLineSide"></div>
+            </div>
+          </div>
+          <canvas id="canvas" width="1000" height="700"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="./js/drawingFunctions.js"></script>
+    <script type="text/javascript" src="./js/helpers.js"></script>
+    <script type="text/javascript" src="./js/index.js"></script>
+  </body>
+</html>
