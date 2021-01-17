@@ -1,5 +1,6 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
+const loader = document.getElementById("loaderContainer");
 
 //SAFE AREA VARIABLES
 let prevSAX = "1";
@@ -49,16 +50,16 @@ const filedState = {
   field: [[50, 50]],
   home: [],
   land: [],
-  noFly: [],
   path: [],
 };
 
 const logicState = {
   fieldCoo: [],
+  fieldCooEdges: [],
   fieldCooNoNF: [],
-  NFInside: [],
   NFEdges: [],
-  NFDrone: [],
+  dangerPointsToHome: null,
+  dangerPointsToSafe: null
 };
 
 drawLines();
@@ -90,6 +91,15 @@ safeAreaButton.addEventListener("click", () => {
     logicState.fieldCoo = allCoo.filter((e) =>
       pointInShape(filedState.field, e)
     );
+    //getting all edge points of filed, so that drone doesn't cross in gray zone, but get rid of drone standing points
+    // let allEdges = getAllPolygonLinePoints(filedState.field);
+    // let allEdgesNoDronePoints = [];
+    // for (let i = 0; i < allEdges.length; i++) {
+    //   if (allEdges[i][0] % 50 !== 0 && allEdges[i][1] !== 0) {
+    //     allEdgesNoDronePoints.push(allEdges[i]);
+    //   }
+    // }
+    // logicState.fieldCooEdges.push(allEdgesNoDronePoints);
   }
 });
 
@@ -102,7 +112,6 @@ homeButton.addEventListener("click", () => {
   makeCircle(homeX.value, homeY.value, "H");
   disable([homeX, homeY, homeButton]);
   enable([SX, SY, safeToLandButtonS, safeToLandButtonF]);
-  filedState.home.push(homeX.value * 50, homeY.value * 50);
   filedState.path.push([homeX.value * 50, homeY.value * 50]);
   dronePathH.innerText = `Path: starts at ${homeX.value} ${homeY.value}`;
   DPX.value = homeX.value;
@@ -152,13 +161,8 @@ noFlyAreaS.addEventListener("click", () => {
     prevNFX = NFX.value;
     prevNFY = NFY.value;
 
-    if (
-      NFX.value === NFStartingPosition[0] &&
-      NFY.value === NFStartingPosition[1]
-    ) {
-      alert(
-        "Thank you! You made your No fly area, continue if you want more, click finish if you dont't"
-      );
+    if (NFX.value === NFStartingPosition[0] && NFY.value === NFStartingPosition[1]) {
+      alert("Thank you! You made your No fly area, continue if you want more, click finish if you dont't");
       firstP = true;
       NFX.value = "0";
       NFY.value = "0";
@@ -166,7 +170,7 @@ noFlyAreaS.addEventListener("click", () => {
       noFlyAreaF.disabled = false;
       NFStartingPosition = [];
 
-      //logic state update
+      //LOGIC STATE UPDATE
       //all edge points (including non x50) of the red zone
       let NFAllEdgePoints = getAllPolygonLinePoints(NFCoo);
       logicState.NFEdges.push(NFAllEdgePoints);
@@ -175,7 +179,6 @@ noFlyAreaS.addEventListener("click", () => {
       let NFInsidePoints = logicState.fieldCoo.filter((e) =>
         pointInShape(NFCoo, e)
       );
-      logicState.NFInside.push(NFInsidePoints);
 
       //all edge points (is 50x) of the red zone
       let NFAllEdgedronePoints = NFAllEdgePoints.filter(
@@ -186,7 +189,6 @@ noFlyAreaS.addEventListener("click", () => {
       let NFAlldronePoints = cleanArr(
         NFAllEdgedronePoints.concat(NFInsidePoints)
       );
-      logicState.NFDrone.push(NFAlldronePoints);
 
       //Saving all points that the drone can actually stand on (fieldCoo - NFAlldronePoints)
       let allPossibleDronePoints = [];
@@ -200,7 +202,10 @@ noFlyAreaS.addEventListener("click", () => {
       }
       logicState.fieldCooNoNF.push(allPossibleDronePoints);
 
-      filedState.noFly.push(NFCoo);
+      logicState.dangerPointsToHome = noRangePoints([homeX.value, homeY.value]);
+      logicState.dangerPointsToSafe = filedState.land.map((e) => noRangePoints(e));
+      //END OF LOGIC STATE UPDATE
+
       fillColor(NFCoo, "red");
       NFCoo = [];
     }
@@ -237,162 +242,19 @@ pathButton.addEventListener("click", () => {
   }
 });
 
+
+//START BUTTON CLICK------------------------------------------------------------
 startBtn.addEventListener("click", () => {
-  let noHome = noRangePoints(filedState.home);
-  let noSafe = noRangePoints(filedState.land[0]);
-  let allTogether = [];
-  for (let i = 0; i < noHome.length; i++) {
-    if (noSafe.filter((e) => arrEquals(noHome[i], e)).length !== 0) {
-      allTogether.push(noHome[i]);
+  let sharedDangerPoints = [];
+  for (let i = 0; i < logicState.dangerPointsToHome.length; i++) {
+    if (logicState.dangerPointsToSafe.flat().filter((e) => arrEquals(logicState.dangerPointsToHome[i], e)).length !== 0) {
+      sharedDangerPoints.push(logicState.dangerPointsToHome[i]);
     }
   }
-  bestSafePoint(allTogether);
+
+  let possibleSafePoints = [];
+  for (let i = 0; i < sharedDangerPoints.length; i++) {
+    possibleSafePoints.push(getPossibleSafePoints(sharedDangerPoints[i]));
+  }
+  findMostRepeated(possibleSafePoints);
 });
-
-//FUNCTIONS FOR DRONE ALGO
-
-const bestSafePoint = (dangerPoints) => {
-
-  let lines = [];
-  for(let i = 0; i<logicState.fieldCooNoNF[0].length; i++){
-    for(let j = 0; j<dangerPoints.length; j++){
-      lines.push(calcStraightLine(logicState.fieldCooNoNF[0][i], dangerPoints[j]));
-    }
-  }
-
-  console.log(lines);
-
-  let noDangerLines = [];
-  for(let i = 0; i<lines.length; i++){
-    let sortArr = [];
-    for(let j = 0; j<lines[i].length; j++){
-      sortArr.push(searchForArray(logicState.NFEdges[0], lines[i][j]))
-    }
-    if(sortArr.filter((elem, index, self) => index === self.indexOf(elem)).length === 1){
-      noDangerLines.push(lines[i][0]);
-    }
-  }
-  console.log(noDangerLines);
-};
-
-const noRangePoints = (goal) => {
-  let lines = [];
-  for (let i = 0; i < logicState.fieldCooNoNF[0].length; i++) {
-    lines.push(calcStraightLine(logicState.fieldCooNoNF[0][i], goal));
-  }
-  let noHPath = [];
-  for (let i = 0; i < lines.length; i++) {
-    for (let j = 0; j < lines[i].length; j++) {
-      if (
-        logicState.NFEdges[0].filter((e) => arrEquals(e, lines[i][j]))
-          .length !== 0
-      ) {
-        noHPath.push(lines[i][0]);
-      }
-    }
-  }
-  return cleanArr(noHPath);
-};
-
-//Funkcija koja omogucava pomocu bresenham-algorithm da izbaci svaku koordinatu za ivice objekta
-const getAllPolygonLinePoints = (polygon) => {
-  let arr = [];
-  for (let i = 0; i < polygon.length - 1; i++) {
-    arr.push(calcStraightLine(polygon[i], polygon[i + 1]));
-  }
-  return arr.flat();
-};
-
-const arrEquals = (a, b) => {
-  return a.toString() === b.toString();
-};
-
-const cleanArr = (arr) => {
-  let tmp = [];
-  let b = arr.filter((e) => {
-    if (tmp.indexOf(e.toString()) < 0) {
-      tmp.push(e.toString());
-      return e;
-    }
-  });
-  return b;
-};
-
-const pointInShape = (polygon, point) => {
-  //A point is in a polygon if a line from the point to infinity crosses the polygon an odd number of times
-  let odd = false;
-  //For each edge (In this case for each point of the polygon and the previous one)
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; i++) {
-    //If a line from the point into infinity crosses this edge
-    if (
-      polygon[i][1] > point[1] !== polygon[j][1] > point[1] && // One point needs to be above, one below our y coordinate
-      // ...and the edge doesn't cross our Y corrdinate before our x coordinate (but between our x coordinate and infinity)
-      point[0] <
-        ((polygon[j][0] - polygon[i][0]) * (point[1] - polygon[i][1])) /
-          (polygon[j][1] - polygon[i][1]) +
-          polygon[i][0]
-    ) {
-      // Invert odd
-      odd = !odd;
-    }
-    j = i;
-  }
-  //If the number of crossings was odd, the point is in the polygon
-  return odd;
-  //https://www.algorithms-and-technologies.com/point_in_polygon/javascript
-  //other solutions on https://www.codewars.com/kata/530265044b7e23379d00076a/solutions/javascript
-};
-
-const calcStraightLine = ([x1, y1], [x2, y2]) => {
-  //https://stackoverflow.com/questions/4672279/bresenham-algorithm-in-javascript
-  var coordinatesArray = new Array();
-  // Define differences and error check
-  var dx = Math.abs(x2 - x1);
-  var dy = Math.abs(y2 - y1);
-  var sx = x1 < x2 ? 1 : -1;
-  var sy = y1 < y2 ? 1 : -1;
-  var err = dx - dy;
-  // Set first coordinates
-  coordinatesArray.push([x1, y1]);
-  // Main loop
-  while (!(x1 == x2 && y1 == y2)) {
-    var e2 = err << 1;
-    if (e2 > -dy) {
-      err -= dy;
-      x1 += sx;
-    }
-    if (e2 < dx) {
-      err += dx;
-      y1 += sy;
-    }
-    // Set coordinates
-    coordinatesArray.push([x1, y1]);
-  }
-  // Return the result
-  return coordinatesArray;
-};
-
-// const hel = calcStraightLine([50,50], [250, 50]);
-// console.log(hel);
-// for(let i of hel){
-//   context.beginPath();
-//   context.moveTo(i[0], i[1]);
-//   context.lineTo(i[0] +1, i[1] +1);
-//   context.lineWidth = 1;
-//   context.strokeStyle = "red";
-//   context.stroke();
-// }
-
-
-const searchForArray = (haystack, needle) => {
-  var i, j, current;
-  for(i = 0; i < haystack.length; ++i){
-    if(needle.length === haystack[i].length){
-      current = haystack[i];
-      for(j = 0; j < needle.length && needle[j] === current[j]; ++j);
-      if(j === needle.length)
-        return i;
-    }
-  }
-  return -1;
-}
